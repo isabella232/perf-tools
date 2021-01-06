@@ -1,6 +1,6 @@
 # CDF Benchmarking Use Case 1 Environment Setup
 
-![UC 1 Architechture Diagram](./uc1-architechture-diagram.png)
+![UC 1 Architecture Diagram](uc1-architecture-diagram.png)
 
 This Terraform script can be used to spin up the GCP resources required for benchmarking the following 
 Use Case 1 pipelines:
@@ -8,9 +8,8 @@ Use Case 1 pipelines:
 - Pipelines with transformations (SQLServer -> Wrangler -> BQ)
 - Pipelines with aggregates (SQLServer -> Wrangler -> GroupBy -> BQ)
 
-Note that the actual pipelines need to be run using the 
-[python scripts in CSR](https://source.developers.google.com/p/quantiphi-datafusion/r/pipeline-automation-scripts) 
-that leverage the [CDAP REST API](https://cloud.google.com/data-fusion/docs/reference/cdap-reference).
+Note that the actual pipelines need to be run using the pipeline automation scripts that leverage the 
+[CDAP REST API](https://cloud.google.com/data-fusion/docs/reference/cdap-reference).
 
 
 ## List of Resources
@@ -28,13 +27,17 @@ that leverage the [CDAP REST API](https://cloud.google.com/data-fusion/docs/refe
 
 ## Prerequisites
 
+### Install Terraform
+Install Terraform by following the steps mentioned in documentation 
+[here](https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/gcp-get-started) 
+
 ### Serivce Account
 Create a service account with the following permissions
 - Compute Admin
 - Cloud Data Fusion Admin
 
 ### Variables 
-Create a *terraform.tfvars* file in the root directory with the following variables
+Create a *terraform.tfvars* file in the terraform root directory with the following variables
 ```
 credentials_path = [path/to/service-account-key.json]
 project_id       = [project_id]
