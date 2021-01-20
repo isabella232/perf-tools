@@ -1,0 +1,109 @@
+{
+    "name": "Multi-table_to_BQ_2TB_3TB_1_Split",
+    "description": "Data Pipeline Application",
+    "artifact": {
+        "name": "cdap-data-pipeline",
+        "version": "6.2.2",
+        "scope": "SYSTEM"
+    },
+    "config": {
+        "resources": {
+            "memoryMB": 12228,
+            "virtualCores": 5
+        },
+        "driverResources": {
+            "memoryMB": 8192,
+            "virtualCores": 1
+        },
+        "connections": [
+            {
+                "from": "Multiple Database Tables",
+                "to": "BigQuery Multi Table"
+            }
+        ],
+        "comments": [],
+        "postActions": [],
+        "properties": {
+            "system.spark.spark.executor.instances": "6"
+        },
+        "processTimingEnabled": true,
+        "stageLoggingEnabled": false,
+        "stages": [
+            {
+                "name": "Multiple Database Tables",
+                "plugin": {
+                    "name": "MultiTableDatabase",
+                    "type": "batchsource",
+                    "label": "Multiple Database Tables",
+                    "artifact": {
+                        "name": "multi-table-plugins",
+                        "version": "1.2.0",
+                        "scope": "USER"
+                    },
+                    "properties": {
+                        "splitsPerTable": "${splits per table}",
+                        "referenceName": "source",
+                        "jdbcPluginName": "sqlserver",
+                        "connectionString": "${jdbc-connection-string}",
+                        "user": "SA",
+                        "password": "sql-server-uc3",
+                        "blackList": "trace_xe_action_map,trace_xe_event_map"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": ""
+                    }
+                ],
+                "id": "Multiple-Database-Tables",
+                "type": "batchsource",
+                "label": "Multiple Database Tables",
+                "icon": "fa-plug"
+            },
+            {
+                "name": "BigQuery Multi Table",
+                "plugin": {
+                    "name": "BigQueryMultiTable",
+                    "type": "batchsink",
+                    "label": "BigQuery Multi Table",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.15.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "project": "auto-detect",
+                        "truncateTable": "false",
+                        "serviceFilePath": "auto-detect",
+                        "allowSchemaRelaxation": "false",
+                        "location": "US",
+                        "referenceName": "destination",
+                        "dataset": "${dataset-name}"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": ""
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "Multiple Database Tables",
+                        "schema": ""
+                    }
+                ],
+                "id": "BigQuery-Multi-Table",
+                "type": "batchsink",
+                "label": "BigQuery Multi Table",
+                "icon": "fa-plug"
+            }
+        ],
+        "schedule": "0 * * * *",
+        "engine": "spark",
+        "numOfRecordsPreview": 100,
+        "description": "Data Pipeline Application",
+        "maxConcurrentRuns": 1
+    }
+}

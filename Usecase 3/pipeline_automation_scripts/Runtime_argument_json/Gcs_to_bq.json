@@ -1,0 +1,5 @@
+{
+    "gcs-source-path": "Enter gcs path where data is generated", 
+    "Dataset Name": "Enter BQ dataset name",
+    "Table Name": "Enter BQ table name"
+ }

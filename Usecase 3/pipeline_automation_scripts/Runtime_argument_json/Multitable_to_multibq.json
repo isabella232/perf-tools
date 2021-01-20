@@ -1,0 +1,5 @@
+{
+    "splits per table": "Number of splits per table", 
+    "jdbc-connection-string": "Enter sqlserver jdbc connection string",
+    "dataset-name": "Enter BQ dataset name"
+ }

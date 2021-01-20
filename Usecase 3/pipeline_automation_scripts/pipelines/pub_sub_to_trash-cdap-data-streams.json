@@ -1,0 +1,162 @@
+{
+    "name": "pub_sub_to_trash",
+    "description": "Data Streams Application",
+    "artifact": {
+        "name": "cdap-data-streams",
+        "version": "6.2.2",
+        "scope": "SYSTEM"
+    },
+    "config": {
+        "stages": [
+            {
+                "name": "Pub/Sub",
+                "plugin": {
+                    "name": "GoogleSubscriber",
+                    "type": "streamingsource",
+                    "label": "Pub/Sub",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.15.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "project": "quantiphi-datafusion",
+                        "serviceFilePath": "auto-detect",
+                        "referenceName": "pub_sub_1kb_1000_topic",
+                        "topic": "${pub_sub_topic_name}",
+                        "subscription": "${pub_sub_subscription_name}"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"event\",\"fields\":[{\"name\":\"message\",\"type\":\"bytes\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"attributes\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}}]}"
+                    }
+                ],
+                "id": "Pub-Sub",
+                "type": "streamingsource",
+                "label": "Pub/Sub",
+                "icon": "fa-plug",
+                "$$hashKey": "object:1725",
+                "isPluginAvailable": true,
+                "_uiPosition": {
+                    "left": "399.5px",
+                    "top": "199.5px"
+                },
+                "_backendProperties": {
+                    "topic": {
+                        "name": "topic",
+                        "description": "Cloud Pub/Sub topic to create a subscription on. This is only used when the specified  subscription does not already exist and needs to be automatically created. If the specified subscription already exists, this value is ignored.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "project": {
+                        "name": "project",
+                        "description": "Google Cloud Project ID, which uniquely identifies a project. It can be found on the Dashboard in the Google Cloud Platform Console.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "subscription": {
+                        "name": "subscription",
+                        "description": "Cloud Pub/Sub subscription to read from. If a subscription with the specified name does not exist, it will be automatically created if a topic is specified. Messages published before the subscription was created will not be read.",
+                        "type": "string",
+                        "required": true,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "serviceFilePath": {
+                        "name": "serviceFilePath",
+                        "description": "Path on the local file system of the service account key used for authorization. Can be set to 'auto-detect' when running on a Dataproc cluster. When running on other clusters, the file must be present on every node in the cluster.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "referenceName": {
+                        "name": "referenceName",
+                        "description": "This will be used to uniquely identify this source for lineage, annotating metadata, etc.",
+                        "type": "string",
+                        "required": true,
+                        "macroSupported": false,
+                        "macroEscapingEnabled": false
+                    }
+                },
+                "description": "Streaming Source to read messages from Google PubSub.",
+                "selected": false
+            },
+            {
+                "name": "Trash",
+                "plugin": {
+                    "name": "Trash",
+                    "type": "batchsink",
+                    "label": "Trash",
+                    "artifact": {
+                        "name": "trash-plugin",
+                        "version": "1.2.0",
+                        "scope": "USER"
+                    },
+                    "properties": {
+                        "referenceName": "Trash"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"event\",\"fields\":[{\"name\":\"message\",\"type\":\"bytes\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"attributes\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "Pub/Sub",
+                        "schema": "{\"type\":\"record\",\"name\":\"event\",\"fields\":[{\"name\":\"message\",\"type\":\"bytes\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"attributes\",\"type\":{\"type\":\"map\",\"keys\":\"string\",\"values\":\"string\"}}]}"
+                    }
+                ],
+                "id": "Trash",
+                "type": "batchsink",
+                "label": "Trash",
+                "icon": "icon-TrashSink",
+                "$$hashKey": "object:1726",
+                "isPluginAvailable": true,
+                "_uiPosition": {
+                    "left": "699.5px",
+                    "top": "199.5px"
+                },
+                "selected": false
+            }
+        ],
+        "connections": [
+            {
+                "from": "Pub/Sub",
+                "to": "Trash"
+            }
+        ],
+        "comments": [],
+        "resources": {
+            "memoryMB": "2048",
+            "virtualCores": "2"
+        },
+        "driverResources": {
+            "memoryMB": "4096",
+            "virtualCores": 1
+        },
+        "postActions": [],
+        "properties": {
+            "system.spark.spark.streaming.backpressure.enabled": "true",
+            "system.spark.spark.executor.instances": "2"
+        },
+        "processTimingEnabled": true,
+        "stageLoggingEnabled": false,
+        "batchInterval": "1s",
+        "clientResources": {
+            "memoryMB": "2048",
+            "virtualCores": "1"
+        },
+        "disableCheckpoints": false,
+        "stopGracefully": true,
+        "checkpointDir": "gs://df-2868946039956676576-nghqzbcbbmi6xefsaizbbqaaaa/checkpoints/"
+    }
+}

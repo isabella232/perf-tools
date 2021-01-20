@@ -1,0 +1,145 @@
+{
+    "artifact": {
+        "name": "cdap-data-pipeline",
+        "version": "6.2.2",
+        "scope": "SYSTEM"
+    },
+    "description": "Data Pipeline Application",
+    "name": "GCS_to_BQ_Latency_100ms",
+    "config": {
+        "resources": {
+            "memoryMB": "8192",
+            "virtualCores": "5"
+        },
+        "driverResources": {
+            "memoryMB": "4096",
+            "virtualCores": 1
+        },
+        "connections": [
+            {
+                "from": "GCS",
+                "to": "Delay"
+            },
+            {
+                "from": "Delay",
+                "to": "BigQuery"
+            }
+        ],
+        "comments": [],
+        "postActions": [],
+        "properties": {
+            "system.spark.spark.executor.instances": "6"
+        },
+        "processTimingEnabled": true,
+        "stageLoggingEnabled": false,
+        "stages": [
+            {
+                "name": "GCS",
+                "plugin": {
+                    "name": "GCSFile",
+                    "type": "batchsource",
+                    "label": "GCS",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.15.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "project": "auto-detect",
+                        "format": "delimited",
+                        "skipHeader": "false",
+                        "serviceFilePath": "auto-detect",
+                        "filenameOnly": "false",
+                        "recursive": "false",
+                        "encrypted": "false",
+                        "schema": "{\"type\":\"record\",\"name\":\"custom\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"int\"},{\"name\":\"L_PARTKEY\",\"type\":\"long\"},{\"name\":\"L_SUPPKEY\",\"type\":\"int\"},{\"name\":\"L_LINENUMBER\",\"type\":\"long\"},{\"name\":\"L_QUANTITY\",\"type\":\"double\"},{\"name\":\"L_EXTENDEDPRICE\",\"type\":\"double\"},{\"name\":\"L_DISCOUNT\",\"type\":\"double\"},{\"name\":\"L_TAX\",\"type\":\"double\"},{\"name\":\"L_RETURNFLAG\",\"type\":\"string\"},{\"name\":\"L_LINESTATUS\",\"type\":\"string\"},{\"name\":\"L_SHIPDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_COMMITDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_RECEIPTDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_SHIPINSTRUCT\",\"type\":\"string\"},{\"name\":\"L_SHIPMODE\",\"type\":\"string\"},{\"name\":\"L_COMMENT\",\"type\":\"string\"}]}",
+                        "referenceName": "gcssource",
+                        "delimiter": "|",
+                        "path": "${gcs-source-path}"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"custom\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"int\"},{\"name\":\"L_PARTKEY\",\"type\":\"long\"},{\"name\":\"L_SUPPKEY\",\"type\":\"int\"},{\"name\":\"L_LINENUMBER\",\"type\":\"long\"},{\"name\":\"L_QUANTITY\",\"type\":\"double\"},{\"name\":\"L_EXTENDEDPRICE\",\"type\":\"double\"},{\"name\":\"L_DISCOUNT\",\"type\":\"double\"},{\"name\":\"L_TAX\",\"type\":\"double\"},{\"name\":\"L_RETURNFLAG\",\"type\":\"string\"},{\"name\":\"L_LINESTATUS\",\"type\":\"string\"},{\"name\":\"L_SHIPDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_COMMITDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_RECEIPTDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_SHIPINSTRUCT\",\"type\":\"string\"},{\"name\":\"L_SHIPMODE\",\"type\":\"string\"},{\"name\":\"L_COMMENT\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "id": "GCS"
+            },
+            {
+                "name": "Delay",
+                "plugin": {
+                    "name": "Delay",
+                    "type": "transform",
+                    "label": "Delay",
+                    "artifact": {
+                        "name": "delay-plugin",
+                        "version": "1.0.0-SNAPSHOT",
+                        "scope": "USER"
+                    },
+                    "properties": {
+                        "delayTime": "100"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"custom\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"int\"},{\"name\":\"L_PARTKEY\",\"type\":\"long\"},{\"name\":\"L_SUPPKEY\",\"type\":\"int\"},{\"name\":\"L_LINENUMBER\",\"type\":\"long\"},{\"name\":\"L_QUANTITY\",\"type\":\"double\"},{\"name\":\"L_EXTENDEDPRICE\",\"type\":\"double\"},{\"name\":\"L_DISCOUNT\",\"type\":\"double\"},{\"name\":\"L_TAX\",\"type\":\"double\"},{\"name\":\"L_RETURNFLAG\",\"type\":\"string\"},{\"name\":\"L_LINESTATUS\",\"type\":\"string\"},{\"name\":\"L_SHIPDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_COMMITDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_RECEIPTDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_SHIPINSTRUCT\",\"type\":\"string\"},{\"name\":\"L_SHIPMODE\",\"type\":\"string\"},{\"name\":\"L_COMMENT\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "GCS",
+                        "schema": "{\"type\":\"record\",\"name\":\"custom\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"int\"},{\"name\":\"L_PARTKEY\",\"type\":\"long\"},{\"name\":\"L_SUPPKEY\",\"type\":\"int\"},{\"name\":\"L_LINENUMBER\",\"type\":\"long\"},{\"name\":\"L_QUANTITY\",\"type\":\"double\"},{\"name\":\"L_EXTENDEDPRICE\",\"type\":\"double\"},{\"name\":\"L_DISCOUNT\",\"type\":\"double\"},{\"name\":\"L_TAX\",\"type\":\"double\"},{\"name\":\"L_RETURNFLAG\",\"type\":\"string\"},{\"name\":\"L_LINESTATUS\",\"type\":\"string\"},{\"name\":\"L_SHIPDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_COMMITDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_RECEIPTDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_SHIPINSTRUCT\",\"type\":\"string\"},{\"name\":\"L_SHIPMODE\",\"type\":\"string\"},{\"name\":\"L_COMMENT\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "id": "Delay"
+            },
+            {
+                "name": "BigQuery",
+                "plugin": {
+                    "name": "BigQueryTable",
+                    "type": "batchsink",
+                    "label": "BigQuery",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.15.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "project": "auto-detect",
+                        "serviceFilePath": "auto-detect",
+                        "operation": "insert",
+                        "truncateTable": "false",
+                        "allowSchemaRelaxation": "false",
+                        "location": "US",
+                        "createPartitionedTable": "false",
+                        "partitionFilterRequired": "false",
+                        "schema": "{\"type\":\"record\",\"name\":\"custom\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"int\"},{\"name\":\"L_PARTKEY\",\"type\":\"long\"},{\"name\":\"L_SUPPKEY\",\"type\":\"int\"},{\"name\":\"L_LINENUMBER\",\"type\":\"long\"},{\"name\":\"L_QUANTITY\",\"type\":\"double\"},{\"name\":\"L_EXTENDEDPRICE\",\"type\":\"double\"},{\"name\":\"L_DISCOUNT\",\"type\":\"double\"},{\"name\":\"L_TAX\",\"type\":\"double\"},{\"name\":\"L_RETURNFLAG\",\"type\":\"string\"},{\"name\":\"L_LINESTATUS\",\"type\":\"string\"},{\"name\":\"L_SHIPDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_COMMITDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_RECEIPTDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_SHIPINSTRUCT\",\"type\":\"string\"},{\"name\":\"L_SHIPMODE\",\"type\":\"string\"},{\"name\":\"L_COMMENT\",\"type\":\"string\"}]}",
+                        "referenceName": "bqsink_delay_plugin",
+                        "dataset": "${dataset-name}",
+                        "table": "${table-name}"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"custom\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"int\"},{\"name\":\"L_PARTKEY\",\"type\":\"long\"},{\"name\":\"L_SUPPKEY\",\"type\":\"int\"},{\"name\":\"L_LINENUMBER\",\"type\":\"long\"},{\"name\":\"L_QUANTITY\",\"type\":\"double\"},{\"name\":\"L_EXTENDEDPRICE\",\"type\":\"double\"},{\"name\":\"L_DISCOUNT\",\"type\":\"double\"},{\"name\":\"L_TAX\",\"type\":\"double\"},{\"name\":\"L_RETURNFLAG\",\"type\":\"string\"},{\"name\":\"L_LINESTATUS\",\"type\":\"string\"},{\"name\":\"L_SHIPDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_COMMITDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_RECEIPTDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_SHIPINSTRUCT\",\"type\":\"string\"},{\"name\":\"L_SHIPMODE\",\"type\":\"string\"},{\"name\":\"L_COMMENT\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "Delay",
+                        "schema": "{\"type\":\"record\",\"name\":\"custom\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"int\"},{\"name\":\"L_PARTKEY\",\"type\":\"long\"},{\"name\":\"L_SUPPKEY\",\"type\":\"int\"},{\"name\":\"L_LINENUMBER\",\"type\":\"long\"},{\"name\":\"L_QUANTITY\",\"type\":\"double\"},{\"name\":\"L_EXTENDEDPRICE\",\"type\":\"double\"},{\"name\":\"L_DISCOUNT\",\"type\":\"double\"},{\"name\":\"L_TAX\",\"type\":\"double\"},{\"name\":\"L_RETURNFLAG\",\"type\":\"string\"},{\"name\":\"L_LINESTATUS\",\"type\":\"string\"},{\"name\":\"L_SHIPDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_COMMITDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_RECEIPTDATE\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}},{\"name\":\"L_SHIPINSTRUCT\",\"type\":\"string\"},{\"name\":\"L_SHIPMODE\",\"type\":\"string\"},{\"name\":\"L_COMMENT\",\"type\":\"string\"}]}"
+                    }
+                ],
+                "id": "BigQuery"
+            }
+        ],
+        "schedule": "0 * * * *",
+        "engine": "spark",
+        "numOfRecordsPreview": 100,
+        "description": "Data Pipeline Application",
+        "maxConcurrentRuns": 1
+    }
+}

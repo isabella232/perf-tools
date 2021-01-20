@@ -1,0 +1,5 @@
+{
+    "pub_sub_topic_name": "Enter pubsub topic name", 
+    "pub_sub_subscription_name": "Enter pubsub subscription name",
+    "Table_name": "Enter BQ table name"
+ }
