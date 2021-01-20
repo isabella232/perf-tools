@@ -1,0 +1,18 @@
+{
+  "L_ORDERKEY": 0,
+  "L_PARTKEY": 4837386875764770624,
+  "L_SUPPKEY": 0,
+  "L_LINENUMBER": 6290240360394017936,
+  "L_QUANTITY": -220.75958130498026,
+  "L_EXTENDEDPRICE": 49.590616040923834,
+  "L_DISCOUNT": -120.32559141956997,
+  "L_TAX": -8.946043170885334,
+  "L_RETURNFLAG": "C",
+  "L_LINESTATUS": "E",
+  "L_SHIPDATE": 659002344384000,
+  "L_COMMITDATE": 1280210432051000,
+  "L_RECEIPTDATE": 1603491823486000,
+  "L_SHIPINSTRUCT": "No, get out of town.",
+  "L_SHIPMODE": "He's a Peeping Tom!",
+  "L_COMMENT": "Now, remember. According to my theory, you interfered with your parents' first meeting. If they don't meet, they won't fall in love, they won't get married and they won't have kids. That's why your older brother's disappearing from that photograph. Your sister will follow, and unless you repair the damage, you'll be next. There is nothing better than true love in the whole world. Except a nice MLT. Mutton, lettuce, and tomato when the mutton is nice and lean and the lettuce is nice and crisp"
+}
