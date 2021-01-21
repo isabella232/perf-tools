@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "spec-version": "1.5"
+  },
+  "display-name": "Delay",
+  "configuration-groups": [
+    {
+      "label": "Delay Time",
+      "properties": [
+        {
+          "widget-type": "number",
+          "label": "Delay Time (ms)",
+          "name": "delayTime",
+          "widget-attributes": {
+            "default": "1",
+            "min": "1",
+            "max": "9223372036854775807"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": []
+}
