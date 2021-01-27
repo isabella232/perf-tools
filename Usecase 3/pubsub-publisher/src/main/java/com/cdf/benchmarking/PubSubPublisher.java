@@ -1,3 +1,19 @@
+/*
+ * Copyright © 2021 Cask Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.cdf.benchmarking;
 
 import com.google.api.core.ApiFuture;
@@ -26,31 +42,31 @@ import java.util.concurrent.TimeUnit;
  */
 public class PubSubPublisher {
   private static final Logger LOG = LoggerFactory.getLogger(PubSubPublisher.class);
-
-  /** no of messages to publish in one batch */
+  
+  // no of messages to publish in one batch
   private static final long elementCountThreshold = 1_000;
-
-  /** batch delay threshold in seconds */
+  
+  // batch delay threshold in seconds
   private static final int delayThreshold = 1;
-
-  /** byte threshold for each batch */
+  
+  // byte threshold for each batch
   private static long byteThreshold;
-
-  /** delay time to slow down the publish operations */
+  
+  // delay time to slow down the publish operations
   private static long manualDelay;
-
-  /** message to publish */
+  
+  // message to publish
   private static String message;
-
-  /** no of threads to create */
+  
+  // no of threads to create
   private static int numThreads;
-
+  
   public static void main(String[] args) {
     String projectId;
     String topicId;
     String publishRate;
     String eventSize;
-
+    
     try {
       projectId = args[0];
       topicId = args[1];
@@ -62,13 +78,13 @@ public class PubSubPublisher {
       throw new IllegalArgumentException(
           "Pass arguments for the project ID, topic ID & publish rate & event size (in that order)");
     }
-
+    
     InputStream inputStream = validateAndConfigureSettings(publishRate, eventSize);
-
+    
     assert inputStream != null;
     Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name());
     message = scanner.useDelimiter("\\A").next();
-
+    
     LOG.info(
         "Spinning up {} thread(s) to publish messages at a rate of {} messages/sec",
         numThreads,
@@ -78,18 +94,18 @@ public class PubSubPublisher {
       service.submit(new PublishMessages(projectId, topicId));
     }
   }
-
+  
   /**
    * Validates the publish rate and event size arguments and configures other settings required to
    * publish messages based on these arguments.
    *
    * @param publishRate Rate at which messages should be published to the Pub/Sub Topic
-   * @param eventSize Size of the message to publish to the Pub/Sub Topic
+   * @param eventSize   Size of the message to publish to the Pub/Sub Topic
    * @return An {@link InputStream} of the message to be published
    */
   private static InputStream validateAndConfigureSettings(String publishRate, String eventSize) {
     InputStream inputStream;
-
+    
     // determine number of threads based on the publish rate. A single thread can publish messages
     // at a rate of 1000 messages/sec
     switch (publishRate) {
@@ -106,7 +122,7 @@ public class PubSubPublisher {
         LOG.error("Publish rate must be one of 1000, 2000 or 5000");
         throw new IllegalArgumentException("Publish rate must be one of 1000, 2000 or 5000");
     }
-
+    
     // read file and set byte threshold based on event size
     switch (eventSize) {
       case "1":
@@ -128,30 +144,32 @@ public class PubSubPublisher {
         LOG.error("Event size must be one of 1, 10 or 100");
         throw new IllegalArgumentException("Event size must be one of 1, 10 or 100");
     }
-
+    
     return inputStream;
   }
-
-  /** Publishes messages to a Pub/Sub Topic at a rate of 1000 messages/sec. */
+  
+  /**
+   * Publishes messages to a Pub/Sub Topic at a rate of 1000 messages/sec.
+   */
   private static class PublishMessages implements Runnable {
     String projectId;
     String topicId;
-
+    
     public PublishMessages(String projectId, String topicId) {
       this.projectId = projectId;
       this.topicId = topicId;
     }
-
+    
     @Override
     public void run() {
       LOG.debug("Thread Name: " + Thread.currentThread().getName());
-
+      
       TopicName topicName = TopicName.of(projectId, topicId);
       Publisher publisher;
       List<ApiFuture<String>> messageIdFutures;
       Instant startTime;
       Instant endTime;
-
+      
       try {
         BatchingSettings batchingSettings =
             BatchingSettings.newBuilder()
@@ -159,25 +177,25 @@ public class PubSubPublisher {
                 .setRequestByteThreshold(byteThreshold)
                 .setDelayThreshold(Duration.ofSeconds(delayThreshold))
                 .build();
-
+        
         publisher = Publisher.newBuilder(topicName).setBatchingSettings(batchingSettings).build();
-
+        
         ByteString byteString = ByteString.copyFromUtf8(message);
         PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(byteString).build();
-
+        
         while (true) {
           messageIdFutures = new ArrayList<>();
-
+          
           startTime = Instant.now();
           for (int i = 0; i < 1000; i++) {
             ApiFuture<String> messageId = publisher.publish(pubsubMessage);
             messageIdFutures.add(messageId);
           }
-
+          
           // pause the thread to slow down the publish operations to 1000 messages/sec
           TimeUnit.MILLISECONDS.sleep(manualDelay);
           endTime = Instant.now();
-
+          
           LOG.debug(
               "Published {} messages in {}",
               messageIdFutures.size(),
