@@ -1,0 +1,4 @@
+{
+    "bq-source-dataset-name": "Enter BQ dataset name where data is generated", 
+    "bq-source-table-name": "Enter BQ table name where data is generated"
+ }

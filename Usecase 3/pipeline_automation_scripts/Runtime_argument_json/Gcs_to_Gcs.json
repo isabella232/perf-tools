@@ -1,0 +1,4 @@
+{
+    "gcs-source-path": "Enter gcs path where data generated", 
+    "gcs-sink-path": "Enter gcs output path"
+ }

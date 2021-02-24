@@ -1,0 +1,286 @@
+{
+    "name": "pub_sub_bq_10sec_batchinterval",
+    "description": "Data Streams Application",
+    "artifact": {
+        "name": "cdap-data-streams",
+        "version": "6.2.2",
+        "scope": "SYSTEM"
+    },
+    "config": {
+        "stages": [
+            {
+                "name": "Pub/Sub",
+                "plugin": {
+                    "name": "GoogleSubscriber",
+                    "type": "streamingsource",
+                    "label": "Pub/Sub",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.15.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "project": "quantiphi-datafusion",
+                        "serviceFilePath": "auto-detect",
+                        "referenceName": "pub_sub_1kb_1000_topic",
+                        "topic": "${pub_sub_topic_name}",
+                        "subscription": "${pub_sub_subscription_name}"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"message\",\"type\":\"bytes\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":{\"logicalType\":\"timestamp-micros\",\"type\":\"long\"}},{\"name\":\"attributes\",\"type\":{\"keys\":\"string\",\"values\":\"string\",\"type\":\"map\"}}]}"
+                    }
+                ],
+                "id": "Pub-Sub",
+                "type": "streamingsource",
+                "label": "Pub/Sub",
+                "icon": "fa-plug",
+                "$$hashKey": "object:776",
+                "isPluginAvailable": true,
+                "_uiPosition": {
+                    "left": "399.5px",
+                    "top": "199.5px"
+                },
+                "selected": false
+            },
+            {
+                "name": "BigQuery",
+                "plugin": {
+                    "name": "BigQueryTable",
+                    "type": "batchsink",
+                    "label": "BigQuery",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.15.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "project": "auto-detect",
+                        "serviceFilePath": "auto-detect",
+                        "operation": "insert",
+                        "truncateTable": "false",
+                        "allowSchemaRelaxation": "true",
+                        "location": "US",
+                        "createPartitionedTable": "false",
+                        "partitionFilterRequired": "false",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"message\",\"type\":\"bytes\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}}]}",
+                        "referenceName": "bqsink",
+                        "dataset": "pubsub_to_bq",
+                        "table": "${Table_name}",
+                        "bucket": "pubsubtobqtemp"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"message\",\"type\":\"bytes\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-micros\"}}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "Pub/Sub",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"message\",\"type\":\"bytes\"},{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":{\"logicalType\":\"timestamp-micros\",\"type\":\"long\"}},{\"name\":\"attributes\",\"type\":{\"keys\":\"string\",\"values\":\"string\",\"type\":\"map\"}}]}"
+                    }
+                ],
+                "id": "BigQuery",
+                "type": "batchsink",
+                "label": "BigQuery",
+                "icon": "fa-plug",
+                "$$hashKey": "object:777",
+                "isPluginAvailable": true,
+                "_uiPosition": {
+                    "left": "699.5px",
+                    "top": "199.5px"
+                },
+                "_backendProperties": {
+                    "schema": {
+                        "name": "schema",
+                        "description": "The schema of the data to write. If provided, must be compatible with the table schema.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "partitionFilter": {
+                        "name": "partitionFilter",
+                        "description": "Partition filter that can be used for partition elimination during Update or Upsert operations.This value is ignored if operation is not UPDATE or UPSERT.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "createPartitionedTable": {
+                        "name": "createPartitionedTable",
+                        "description": "Whether to create the BigQuery table with time partitioning. This value is ignored if the table already exists.",
+                        "type": "boolean",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "project": {
+                        "name": "project",
+                        "description": "Google Cloud Project ID, which uniquely identifies a project. It can be found on the Dashboard in the Google Cloud Platform Console.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "dedupeBy": {
+                        "name": "dedupeBy",
+                        "description": "Column names and sort order used to choose which input record to update/upsert when there are multiple input records with the same key. For example, if this is set to 'updated_time desc', then if there are multiple input records with the same key, the one with the largest value for 'updated_time' will be applied.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "allowSchemaRelaxation": {
+                        "name": "allowSchemaRelaxation",
+                        "description": "Whether to modify the BigQuery table schema if it differs from the input schema.",
+                        "type": "boolean",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "relationTableKey": {
+                        "name": "relationTableKey",
+                        "description": "List of fields that determines relation between tables during Update and Upsert operations.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "clusteringOrder": {
+                        "name": "clusteringOrder",
+                        "description": "List of fields that determines the sort order of the data. Fields must be of type INT, LONG, STRING, DATE, TIMESTAMP, BOOLEAN or DECIMAL. Tables cannot be clustered on more than 4 fields. This value is only used when the BigQuery table is automatically created and ignored if the table already exists.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "bucket": {
+                        "name": "bucket",
+                        "description": "The Google Cloud Storage bucket to store temporary data in. It will be automatically created if it does not exist, but will not be automatically deleted. Cloud Storage data will be deleted after it is loaded into BigQuery. If it is not provided, a unique bucket will be created and then deleted after the run finishes.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "gcsChunkSize": {
+                        "name": "gcsChunkSize",
+                        "description": "Optional property to tune chunk size in gcs upload request. The value of this property should be in number of bytes. By default, 8388608 bytes (8MB) will be used as upload request chunk size.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "partitionFilterRequired": {
+                        "name": "partitionFilterRequired",
+                        "description": "Whether to create a table that requires a partition filter. This value is ignored if the table already exists.",
+                        "type": "boolean",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "serviceFilePath": {
+                        "name": "serviceFilePath",
+                        "description": "Path on the local file system of the service account key used for authorization. Can be set to 'auto-detect' when running on a Dataproc cluster. When running on other clusters, the file must be present on every node in the cluster.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "truncateTable": {
+                        "name": "truncateTable",
+                        "description": "Whether or not to truncate the table before writing to it. Should only be used with the Insert operation. This could overwrite the table schema",
+                        "type": "boolean",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "partitionByField": {
+                        "name": "partitionByField",
+                        "description": "Partitioning column for the BigQuery table. This should be left empty if the BigQuery table is an ingestion-time partitioned table.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "location": {
+                        "name": "location",
+                        "description": "The location where the big query dataset will get created. This value is ignored if the dataset or temporary bucket already exist.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "operation": {
+                        "name": "operation",
+                        "description": "Type of write operation to perform. This can be set to Insert, Update or Upsert.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "dataset": {
+                        "name": "dataset",
+                        "description": "The dataset to write to. A dataset is contained within a specific project. Datasets are top-level containers that are used to organize and control access to tables and views.",
+                        "type": "string",
+                        "required": true,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "table": {
+                        "name": "table",
+                        "description": "The table to write to. A table contains individual records organized in rows. Each record is composed of columns (also called fields). Every table is defined by a schema that describes the column names, data types, and other information.",
+                        "type": "string",
+                        "required": true,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "referenceName": {
+                        "name": "referenceName",
+                        "description": "This will be used to uniquely identify this sink for lineage, annotating metadata, etc.",
+                        "type": "string",
+                        "required": true,
+                        "macroSupported": false,
+                        "macroEscapingEnabled": false
+                    }
+                },
+                "description": "This sink writes to a BigQuery table. BigQuery is Google's serverless, highly scalable, enterprise data warehouse. Data is first written to a temporary location on Google Cloud Storage, then loaded into BigQuery from there.",
+                "selected": false
+            }
+        ],
+        "connections": [
+            {
+                "from": "Pub/Sub",
+                "to": "BigQuery"
+            }
+        ],
+        "comments": [],
+        "resources": {
+            "memoryMB": "2048",
+            "virtualCores": "2"
+        },
+        "driverResources": {
+            "memoryMB": "4096",
+            "virtualCores": 1
+        },
+        "postActions": [],
+        "properties": {
+            "system.spark.spark.streaming.backpressure.enabled": "true",
+            "system.spark.spark.executor.instances": "2"
+        },
+        "processTimingEnabled": true,
+        "stageLoggingEnabled": false,
+        "batchInterval": "10s",
+        "clientResources": {
+            "memoryMB": "2048",
+            "virtualCores": "1"
+        },
+        "disableCheckpoints": false,
+        "stopGracefully": true,
+        "checkpointDir": "gs://df-2868946039956676576-nghqzbcbbmi6xefsaizbbqaaaa/checkpoints/"
+    }
+}

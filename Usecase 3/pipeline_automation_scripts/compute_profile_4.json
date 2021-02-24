@@ -1,0 +1,52 @@
+{
+        "name": "20wn_profile",
+        "label": "20wn_profile",
+        "description": "Creates Dataproc clusters for 20wn_profile",
+        "scope": "USER",
+        "status": "ENABLED",
+        "provisioner": {
+            "name": "gcp-dataproc",
+            "properties": [
+            {
+                "name": "masterNumNodes",
+                "value": "1",
+                "isEditable": "true"
+            },
+            {
+                "name": "masterCPUs",
+                "value": "2",
+                "isEditable": "true"
+            },
+            {
+                "name": "masterMemoryMB",
+                "value": "8192",
+                "isEditable": "true"
+            },
+            {
+                "name": "masterDiskGB",
+                "value": "16384",
+                "isEditable": "true"
+            },
+            {
+                "name": "workerNumNodes",
+                "value": "20",
+                "isEditable": "true"
+            },
+            {
+                "name": "workerCPUs",
+                "value": "32",
+                "isEditable": "true"
+            },
+            {
+                "name": "workerMemoryMB",
+                "value": "131072",
+                "isEditable": "true"
+            },
+            {
+                "name": "workerDiskGB",
+                "value": "16384",
+                "isEditable": "true"
+            }
+            ]
+        }
+        }
